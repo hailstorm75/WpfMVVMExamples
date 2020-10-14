@@ -1,5 +1,6 @@
 ﻿using System.Windows;
 using WpfAdvanced.Base;
+using WpfAdvanced.Interfaces.MVVM;
 using WpfAdvanced.Interfaces.ViewModels;
 
 namespace WpfAdvanced
@@ -8,10 +9,13 @@ namespace WpfAdvanced
   /// Interaction logic for MainWindow.xaml
   /// </summary>
   public partial class MainWindow
-    : Window
+    : Window, IView<IMainWindowViewModel>
   {
-    [SetViewModel(typeof(IMainWindowViewModel))]
+    [SetViewModel]
     public MainWindow()
       => InitializeComponent();
+
+    /// <inheritdoc />
+    public IMainWindowViewModel ViewModel { get; private set; }
   }
 }

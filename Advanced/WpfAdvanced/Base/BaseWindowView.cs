@@ -12,7 +12,7 @@ namespace WpfAdvanced.Base
     : Window, IView<IViewModel>
   {
     /// <inheritdoc />
-    public IViewModel ViewModel { get; }
+    public IViewModel ViewModel { get; private set; }
 
     public BaseWindowView(Type type)
     {

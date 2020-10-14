@@ -10,6 +10,7 @@ using PostSharp.Aspects.Advices;
 using PostSharp.Extensibility;
 using Whathecode.System.Reflection.Extensions;
 using WpfAdvanced.Helpers;
+using WpfAdvanced.Interfaces.MVVM;
 using ReflectionHelper = Whathecode.System.Reflection.ReflectionHelper;
 
 namespace WpfAdvanced.Base
@@ -22,7 +23,7 @@ namespace WpfAdvanced.Base
   {
     #region Fields
 
-    private readonly Type m_viewModelType;
+    private Type m_viewModelType;
     [NonSerialized]
     private Action<object> m_initializer;
     [NonSerialized]
@@ -58,11 +59,30 @@ namespace WpfAdvanced.Base
       // A constructor always has a declaring type.
       Contract.Assume(methodInfo.DeclaringType != null);
 
+      var lookingFor = typeof(IView<IViewModel>);
+      var viewModelInterface = methodInfo.DeclaringType.GetInterfaces()
+        .FirstOrDefault(type => type.Namespace?.Equals(lookingFor.Namespace, StringComparison.InvariantCulture) == true
+                                && type.Name.Equals(lookingFor.Name)
+                                && type.GenericTypeArguments.Length == 1);
+      if (viewModelInterface is null && m_viewModelType is null)
+        throw new NotSupportedException($"Either supply a {nameof(IViewModel)} type in the constructor of the attribute or add the {nameof(IView<IViewModel>)} interface with the respective view model type as the generic parameter.");
+
       base.RuntimeInitialize(methodInfo);
 
       var declaringType = methodInfo.DeclaringType;
-      var property = declaringType.GetProperty(nameof(FrameworkElement.DataContext));
-      m_initializer = instance => property?.SetMethod?.Invoke(instance, new object[] { ViewModelResolver.Resolve(m_viewModelType) });
+      var dataContext = declaringType.GetProperty(nameof(FrameworkElement.DataContext));
+      var interfaceContext = declaringType.GetProperty("ViewModel");
+
+      if (m_viewModelType is null)
+        m_viewModelType = viewModelInterface?.GenericTypeArguments.First();
+
+      var viewModel = new object[] {ViewModelResolver.Resolve(m_viewModelType)};
+
+      m_initializer = instance =>
+      {
+        dataContext?.SetMethod?.Invoke(instance, viewModel);
+        interfaceContext?.SetMethod?.Invoke(instance, viewModel);
+      };
     }
 
     public object CreateInstance(AdviceArgs adviceArgs)
