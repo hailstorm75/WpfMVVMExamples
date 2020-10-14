@@ -1,0 +1,24 @@
+﻿<Project Sdk="Microsoft.NET.Sdk.WindowsDesktop">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <UseWPF>true</UseWPF>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Autofac" Version="6.0.0" />
+    <PackageReference Include="PostSharp" Version="6.6.15" />
+    <PackageReference Include="Whathecode.System" Version="1.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Views\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WpfAdvanced.Interfaces\WpfAdvanced.Interfaces.csproj" />
+    <ProjectReference Include="..\WpfAdvanced.ViewModels\WpfAdvanced.ViewModels.csproj" />
+  </ItemGroup>
+
+</Project>
