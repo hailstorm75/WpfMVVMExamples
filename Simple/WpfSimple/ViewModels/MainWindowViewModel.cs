@@ -6,6 +6,9 @@ using WpfSimple.Models;
 
 namespace WpfSimple.ViewModels
 {
+  /// <summary>
+  /// View model for the main window
+  /// </summary>
   public sealed class MainWindowViewModel
     : BasePropertyChanged
   {
